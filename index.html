@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#10111d">
+  <title>BLEACH CARDS — Jeu de cartes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="BLEACH CARDS, accueil">
+        <span class="brand-mark">✳</span>
+        <span>BLEACH CARDS</span>
+      </a>
+      <nav class="tabs" aria-label="Navigation principale">
+        <button class="tab active" data-view="summon">Invocation</button>
+        <button class="tab" data-view="collection">Collection <span class="collection-nav-count">0</span></button>
+        <button class="tab" data-view="minigame">Mini-jeu</button>
+        <button class="tab" data-view="shop">Boutique</button>
+      </nav>
+      <div class="player-chip">
+        <span class="player-avatar">✦</span><span class="player-name">Collectionneur</span>
+        <span class="blue-coin-wallet" aria-label="Pièces bleues"><span class="coin-icon">◆</span><span id="blue-coin-balance">0</span><span class="coin-label">pièces bleues</span></span>
+      </div>
+    </header>
+
+    <main>
+      <section id="summon-view" class="view active">
+        <div class="hero">
+          <div class="hero-copy">
+            <div class="eyebrow"><span class="eyebrow-line"></span><span id="next-pack-eyebrow">PROCHAIN PAQUET · CLASSIQUE</span></div>
+            <h1>Ouvre un nouveau<br><em>paquet</em></h1>
+            <div class="hero-actions">
+              <button id="open-pack" class="primary-button"><span>✧</span> Ouvrir un paquet <span class="button-arrow">↗</span></button>
+              <span class="pack-caption">5 cartes par paquet</span>
+            </div>
+          </div>
+          <div class="hero-art" aria-hidden="true">
+            <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+            <div class="hero-glow"></div>
+            <div class="hero-spark spark-one">✦</div><div class="hero-spark spark-two">✧</div>
+            <div id="booster-pack" class="booster-pack classic">
+              <div class="pack-top">ÉDITION N° 01</div>
+              <div class="pack-emblem">✳</div>
+              <div class="pack-title">PAQUET<br><span id="booster-title">CLASSIQUE</span></div>
+              <div class="pack-bottom">5 CARTES À DÉCOUVRIR</div>
+              <div class="pack-shine"></div>
+            </div>
+          </div>
+        </div>
+
+        <section class="pity-section" aria-labelledby="pity-heading">
+          <div class="pity-heading">
+            <div>
+              <div class="eyebrow">PROGRESSION PITY</div>
+              <h2 id="pity-heading">Le prochain paquet</h2>
+            </div>
+            <div class="pity-summary">
+              <span><span id="packs-opened">0</span> paquets ouverts</span>
+              <span>À venir : <strong id="next-pack-name">Classique</strong></span>
+            </div>
+          </div>
+          <div class="pity-tracks">
+            <article class="pity-track bronze">
+              <div class="pity-track-heading"><strong>Bronze</strong><span id="bronze-counter">0 / 10</span></div>
+              <div id="bronze-progress" class="pity-progress" role="progressbar" aria-label="Progression avant le paquet bronze" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0"><span></span></div>
+              <p>Après 10 paquets classiques · Épique ×1,5 · Légendaire et mythique ×2</p>
+            </article>
+            <article class="pity-track silver">
+              <div class="pity-track-heading"><strong>Argent</strong><span id="silver-counter">0 / 50</span></div>
+              <div id="silver-progress" class="pity-progress" role="progressbar" aria-label="Progression avant le paquet argent" aria-valuemin="0" aria-valuemax="50" aria-valuenow="0"><span></span></div>
+              <p>Après 50 paquets classiques · Épique ×1,75 · Légendaire ×2,5 · Mythique ×3</p>
+            </article>
+            <article class="pity-track gold">
+              <div class="pity-track-heading"><strong>Or</strong><span id="gold-counter">0 / 250</span></div>
+              <div id="gold-progress" class="pity-progress" role="progressbar" aria-label="Progression avant le paquet or" aria-valuemin="0" aria-valuemax="250" aria-valuenow="0"><span></span></div>
+              <p>Après 250 paquets classiques · Épique ×2 · Légendaire ×3,5 · Mythique ×4</p>
+            </article>
+          </div>
+          <p class="pity-note">Les paquets de pity ne font pas progresser les compteurs. Si plusieurs seuils sont atteints ensemble, le paquet supérieur l'emporte et les compteurs inférieurs sont remis à zéro avant son ouverture. Les probabilités des cartes communes et rares diminuent proportionnellement pour conserver un total de 100 %.</p>
+        </section>
+
+        <section class="rarity-section">
+          <div class="section-heading">
+            <div class="eyebrow">TAUX DU PROCHAIN PAQUET</div>
+          </div>
+          <div id="rarity-list" class="rarity-list"></div>
+        </section>
+
+        <section id="results-section" class="results-section hidden" aria-live="polite">
+          <div class="section-heading">
+            <div><div id="opened-pack-type" class="eyebrow">NOUVELLE OUVERTURE</div><p id="reveal-progress" class="reveal-progress">5 cartes à découvrir</p><p id="pack-bonus" class="pack-bonus hidden"></p></div>
+            <button id="reveal-next" class="primary-button"><span>✧</span> Révéler la première carte <span class="button-arrow">↗</span></button>
+            <button id="close-results" class="text-button">Continuer à explorer <span>→</span></button>
+          </div>
+          <div id="pack-results" class="cards-grid result-grid"></div>
+        </section>
+      </section>
+
+      <section id="collection-view" class="view">
+        <div id="collection-content">
+          <div class="collection-header">
+            <div>
+              <div class="eyebrow"><span class="eyebrow-line"></span> TOUTE LES CARTES OBTENUES</div>
+              <h1>La <em>collection</em></h1>
+              <p id="collection-summary">Ici apparaitront toutes les cartes que tu as obtenues.</p>
+            </div>
+            <div class="collection-progress"><span class="progress-number" id="collection-count">0</span><span class="progress-label">cartes<br>uniques</span><span class="progress-divider"></span><span class="progress-total">/ <span id="collection-total">25</span></span></div>
+          </div>
+          <div class="collection-toolbar">
+            <div id="rarity-filters" class="filters"></div>
+            <div class="collection-controls">
+              <label class="collection-search">
+                <span>Rechercher</span>
+                <input id="collection-search" type="search" placeholder="Nom d'une carte" autocomplete="off">
+              </label>
+              <label class="collection-sort">
+                <span>Trier par</span>
+                <select id="collection-sort">
+                  <option value="name-asc">Nom (A–Z)</option>
+                  <option value="name-desc">Nom (Z–A)</option>
+                  <option value="rarity-asc">Rareté croissante</option>
+                  <option value="rarity-desc" selected>Rareté décroissante</option>
+                  <option value="stars-asc">Étoiles croissantes</option>
+                  <option value="stars-desc">Étoiles décroissantes</option>
+                </select>
+              </label>
+            </div>
+            <span id="owned-count" class="owned-count">0 cartes obtenues</span>
+          </div>
+          <div id="collection-grid" class="cards-grid collection-grid"></div>
+          <p id="no-collection-results" class="no-collection-results hidden">Aucune carte ne correspond à ta recherche ou à ce filtre.</p>
+          <div id="empty-state" class="empty-state">
+            <div class="empty-icon">✧</div>
+            <h2>Tu n'as pas encore obtenu de cartes.</h2>
+            <p>Ouvre ton premier paquet pour remplir ta Collection.</p>
+            <button id="empty-open-pack" class="primary-button"><span>✧</span> Découvrir mon premier paquet</button>
+          </div>
+        </div>
+        <section id="card-detail" class="card-detail hidden" aria-labelledby="detail-heading">
+          <button id="detail-back" class="text-button detail-back">← Retour à la collection</button>
+          <div class="card-detail-layout">
+            <div id="detail-card-preview" class="detail-card-preview"></div>
+            <div class="detail-panel">
+              <div class="eyebrow">FICHE DÉTAILLÉE</div>
+              <h1 id="detail-heading">Détail de la carte</h1>
+              <p id="detail-card-rarity" class="detail-card-rarity"></p>
+              <div class="detail-tabs" role="tablist" aria-label="Informations de la carte">
+                <button class="detail-tab active" id="description-tab" type="button" role="tab" aria-selected="true" data-detail-tab="description">Description</button>
+                <button class="detail-tab" id="style-tab" type="button" role="tab" aria-selected="false" data-detail-tab="style">Style</button>
+              </div>
+              <div id="description-panel" class="detail-content" role="tabpanel" aria-labelledby="description-tab">À venir</div>
+              <div id="style-panel" class="detail-content hidden" role="tabpanel" aria-labelledby="style-tab">
+                <p id="style-current-level" class="style-current-level"></p>
+                <p class="style-instructions">Débloque cinq paliers d'effets visuels, teintés selon la rareté de ta carte.</p>
+                <div id="style-level-list" class="style-level-list"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <section id="minigame-view" class="view" aria-labelledby="hangman-heading">
+        <header class="mini-game-header">
+          <div class="eyebrow"><span class="eyebrow-line"></span> DÉFI BONUS</div>
+          <h1 id="hangman-heading">Le <em>pendu</em></h1>
+          <p>Devine le nom d'un personnage. Chaque victoire rapporte 10 pièces boutique et 15 pièces bleues.</p>
+        </header>
+        <section class="hangman-panel" aria-label="Jeu du pendu">
+          <div class="hangman-layout">
+            <div class="hangman-board">
+              <svg class="hangman-drawing" viewBox="0 0 180 190" aria-hidden="true">
+                <path class="hangman-scaffold" d="M22 176h136M52 176V22h84v24M52 48H34" />
+                <circle class="hangman-part" data-error="1" cx="136" cy="63" r="15" />
+                <path class="hangman-part" data-error="2" d="M136 78v43" />
+                <path class="hangman-part" data-error="3" d="M136 88l-23 23" />
+                <path class="hangman-part" data-error="4" d="M136 88l23 23" />
+                <path class="hangman-part" data-error="5" d="M136 121l-22 32" />
+                <path class="hangman-part" data-error="6" d="M136 121l22 32" />
+              </svg>
+              <p id="hangman-error-count" class="hangman-error-count">Erreurs : 0 / 6</p>
+            </div>
+            <div class="hangman-play-area">
+              <p id="hangman-status" class="hangman-status" role="status" aria-live="polite">Prêt à jouer ?</p>
+              <p class="hangman-instructions">Les espaces, traits d'union et apostrophes sont révélés. Les accents n'ont pas besoin d'être saisis.</p>
+              <div id="hangman-word" class="hangman-word" aria-label="Nom à deviner"></div>
+              <p id="hangman-feedback" class="hangman-feedback" aria-live="polite"></p>
+              <div id="hangman-reward" class="hangman-reward hidden"></div>
+              <div id="hangman-letters" class="hangman-letters hidden" role="group" aria-label="Choisir une lettre"></div>
+              <button id="hangman-start" class="primary-button" type="button">Commencer une partie</button>
+              <button id="hangman-replay" class="primary-button hidden" type="button">Rejouer</button>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <section id="shop-view" class="view">
+        <div class="shop-header">
+          <div>
+            <div class="eyebrow"><span class="eyebrow-line"></span> OFFRES RENOUVELÉES RÉGULIÈREMENT</div>
+            <h1>La <em>boutique</em></h1>
+            <p>Achète de nouvelles cartes avec les pièces gagnées en les révélant.</p>
+          </div>
+          <div class="shop-status">
+            <div class="shop-wallet" aria-label="Solde en pièces boutique">
+              <span aria-hidden="true">◈</span>
+              <strong id="shop-coin-balance">0</strong>
+              <span>pièces boutique</span>
+            </div>
+            <div class="shop-refresh">Nouveau stock dans <strong id="shop-refresh-countdown">10:00</strong></div>
+          </div>
+        </div>
+        <p class="shop-info">Chaque carte en stock ne peut être achetée qu'une fois avant le prochain renouvellement. Les révélations rapportent : commune 0 pièce (0,5 à 7 étoiles), rare 0,5, épique 2,5, légendaire et argent 10, mythique et or 25 pièces; à 7 étoiles, les autres raretés doublent leur récompense. Les cartes achetées rejoignent ta collection.</p>
+        <p id="shop-free-banner" class="shop-free-banner hidden"></p>
+        <div id="shop-grid" class="shop-grid" aria-live="polite"></div>
+        <details class="shop-code-section">
+          <summary>Code de récompense <span>Entrer un code</span></summary>
+          <form id="shop-code-form" class="shop-code-form">
+            <label for="shop-code-input">Code</label>
+            <div class="shop-code-entry">
+              <input id="shop-code-input" type="text" autocomplete="off" autocapitalize="characters" placeholder="Saisir un code" aria-describedby="shop-code-feedback">
+              <button type="submit">Utiliser</button>
+            </div>
+            <p id="shop-code-feedback" aria-live="polite">Chaque code peut être utilisé une seule fois.</p>
+          </form>
+        </details>
+      </section>
+    </main>
+    <footer><span>BLEACH CARDS</span></footer>
+  </div>
+  <div id="toast" class="toast" role="status"></div>
+  <script src="images/card-manifest.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
